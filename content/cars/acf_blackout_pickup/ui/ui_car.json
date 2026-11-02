@@ -1,8 +1,8 @@
 {
-  "name": "AC Forge Blackout Pickup",
-  "brand": "AC Forge",
+  "name": "Chevrolet Silverado Z71 1994 Twin Turbo",
+  "brand": "Chevrolet",
   "parent": "",
-  "description": "Slammed, wide-body regular-cab pickup with an open front bay, iron-block V8 and a twin-turbo kit mounted in the bed. Red buckets, side-exit exhaust, aluminium fuel cell, 20\" multi-spoke wheels. Built for drift and street sessions.",
+  "description": "1994 Silverado Z71 regular cab, slammed on carbon wide-body flares. Iron V8 in an open front bay under a carbon twin-oval airbox; a rear bed-mounted twin-turbo system with the exhaust exiting through both sides of the box just ahead of the rear wheels. Strapped aluminium fuel cell in the open bed, diagonal inboard coilovers, red buckets with 5-point harnesses, roll cage, 20\" split-spoke wheels. Built for drift and street sessions.",
   "tags": [
     "#Street",
     "rwd",
@@ -10,7 +10,8 @@
     "turbo",
     "pickup",
     "drift",
-    "v8"
+    "v8",
+    "usa"
   ],
   "class": "street",
   "specs": {
@@ -138,7 +139,7 @@
       "884"
     ]
   ],
-  "year": 2026,
+  "year": 1994,
   "country": "USA",
   "author": "AC Forge",
   "version": "0.1",
