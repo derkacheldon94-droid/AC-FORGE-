@@ -1,0 +1,146 @@
+{
+  "name": "AC Forge Blackout Pickup",
+  "brand": "AC Forge",
+  "parent": "",
+  "description": "Slammed, wide-body regular-cab pickup with an open front bay, iron-block V8 and a twin-turbo kit mounted in the bed. Red buckets, side-exit exhaust, aluminium fuel cell, 20\" multi-spoke wheels. Built for drift and street sessions.",
+  "tags": [
+    "#Street",
+    "rwd",
+    "manual",
+    "turbo",
+    "pickup",
+    "drift",
+    "v8"
+  ],
+  "class": "street",
+  "specs": {
+    "bhp": "897bhp",
+    "torque": "1102Nm",
+    "weight": "1580kg",
+    "topspeed": "320+km/h",
+    "acceleration": "--",
+    "pwratio": "1.76kg/hp",
+    "range": 0
+  },
+  "torqueCurve": [
+    [
+      "1000",
+      "337"
+    ],
+    [
+      "1500",
+      "423"
+    ],
+    [
+      "2000",
+      "517"
+    ],
+    [
+      "2500",
+      "610"
+    ],
+    [
+      "3000",
+      "717"
+    ],
+    [
+      "3500",
+      "847"
+    ],
+    [
+      "4000",
+      "995"
+    ],
+    [
+      "4500",
+      "1102"
+    ],
+    [
+      "5000",
+      "1098"
+    ],
+    [
+      "5500",
+      "1074"
+    ],
+    [
+      "6000",
+      "1036"
+    ],
+    [
+      "6500",
+      "978"
+    ],
+    [
+      "7000",
+      "912"
+    ],
+    [
+      "7200",
+      "874"
+    ]
+  ],
+  "powerCurve": [
+    [
+      "1000",
+      "47"
+    ],
+    [
+      "1500",
+      "89"
+    ],
+    [
+      "2000",
+      "145"
+    ],
+    [
+      "2500",
+      "214"
+    ],
+    [
+      "3000",
+      "302"
+    ],
+    [
+      "3500",
+      "417"
+    ],
+    [
+      "4000",
+      "559"
+    ],
+    [
+      "4500",
+      "696"
+    ],
+    [
+      "5000",
+      "771"
+    ],
+    [
+      "5500",
+      "829"
+    ],
+    [
+      "6000",
+      "873"
+    ],
+    [
+      "6500",
+      "893"
+    ],
+    [
+      "7000",
+      "897"
+    ],
+    [
+      "7200",
+      "884"
+    ]
+  ],
+  "year": 2026,
+  "country": "USA",
+  "author": "AC Forge",
+  "version": "0.1",
+  "url": ""
+}
