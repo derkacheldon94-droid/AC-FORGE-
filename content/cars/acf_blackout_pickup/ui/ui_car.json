@@ -1,8 +1,7 @@
 {
-  "name": "AC Forge Blackout Pickup",
-  "brand": "AC Forge",
-  "parent": "",
-  "description": "Slammed, wide-body regular-cab pickup with an open front bay, iron-block V8 and a twin-turbo kit mounted in the bed. Red buckets, side-exit exhaust, aluminium fuel cell, 20\" multi-spoke wheels. Built for drift and street sessions.",
+  "name": "Chevrolet Silverado Z71 1994 Twin Turbo",
+  "brand": "Chevrolet",
+  "description": "1994 Silverado Z71 short-bed regular cab on a carbon wide-body kit. Iron V8 in an open front bay under a carbon twin-oval airbox; bed-mounted twin-turbo system with the exhaust exiting through both sides of the box just ahead of the rear wheels. Red buckets with harnesses, roll cage, strapped aluminium fuel cell in the open bed, 20-inch split-spoke wheels. RWD, 6-speed manual.",
   "tags": [
     "#Street",
     "rwd",
@@ -10,137 +9,138 @@
     "turbo",
     "pickup",
     "drift",
-    "v8"
+    "v8",
+    "usa",
+    "widebody"
   ],
   "class": "street",
   "specs": {
-    "bhp": "897bhp",
-    "torque": "1102Nm",
-    "weight": "1580kg",
-    "topspeed": "320+km/h",
+    "bhp": "896 bhp",
+    "torque": "1102 Nm",
+    "weight": "1580 kg",
+    "topspeed": "~320 km/h",
     "acceleration": "--",
-    "pwratio": "1.76kg/hp",
-    "range": 0
+    "pwratio": "1.76 kg/hp"
   },
   "torqueCurve": [
     [
-      "1000",
-      "337"
+      1000.0,
+      336.7
     ],
     [
-      "1500",
-      "423"
+      1500.0,
+      423.3
     ],
     [
-      "2000",
-      "517"
+      2000.0,
+      516.6
     ],
     [
-      "2500",
-      "610"
+      2500.0,
+      609.9
     ],
     [
-      "3000",
-      "717"
+      3000.0,
+      717.1
     ],
     [
-      "3500",
-      "847"
+      3500.0,
+      847.5
     ],
     [
-      "4000",
-      "995"
+      4000.0,
+      995.1
     ],
     [
-      "4500",
-      "1102"
+      4500.0,
+      1102.0
     ],
     [
-      "5000",
-      "1098"
+      5000.0,
+      1098.2
     ],
     [
-      "5500",
-      "1074"
+      5500.0,
+      1073.5
     ],
     [
-      "6000",
-      "1036"
+      6000.0,
+      1035.5
     ],
     [
-      "6500",
-      "978"
+      6500.0,
+      978.5
     ],
     [
-      "7000",
-      "912"
+      7000.0,
+      912.0
     ],
     [
-      "7200",
-      "874"
+      7200.0,
+      874.0
     ]
   ],
   "powerCurve": [
     [
-      "1000",
-      "47"
+      1000.0,
+      47.3
     ],
     [
-      "1500",
-      "89"
+      1500.0,
+      89.2
     ],
     [
-      "2000",
-      "145"
+      2000.0,
+      145.1
     ],
     [
-      "2500",
-      "214"
+      2500.0,
+      214.1
     ],
     [
-      "3000",
-      "302"
+      3000.0,
+      302.1
     ],
     [
-      "3500",
-      "417"
+      3500.0,
+      416.6
     ],
     [
-      "4000",
-      "559"
+      4000.0,
+      559.0
     ],
     [
-      "4500",
-      "696"
+      4500.0,
+      696.4
     ],
     [
-      "5000",
-      "771"
+      5000.0,
+      771.1
     ],
     [
-      "5500",
-      "829"
+      5500.0,
+      829.2
     ],
     [
-      "6000",
-      "873"
+      6000.0,
+      872.5
     ],
     [
-      "6500",
-      "893"
+      6500.0,
+      893.2
     ],
     [
-      "7000",
-      "897"
+      7000.0,
+      896.5
     ],
     [
-      "7200",
-      "884"
+      7200.0,
+      883.7
     ]
   ],
-  "year": 2026,
+  "year": 1994,
   "country": "USA",
   "author": "AC Forge",
-  "version": "0.1",
+  "version": "0.2",
   "url": ""
 }
