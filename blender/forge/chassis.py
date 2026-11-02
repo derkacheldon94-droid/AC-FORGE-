@@ -6,7 +6,7 @@ import math
 import bpy  # noqa: F401
 
 from . import geo as G
-from .dims import BED_KIT_SHIFT, FA, FRONT_Y, RA, WHEEL_Z
+from .dims import BED_KIT_SHIFT, FA, FRONT_Y, RA, TRACK_F, TRACK_R, WHEEL_Z
 
 TY = -1.17 + BED_KIT_SHIFT
 
@@ -24,21 +24,22 @@ def build(col, M):
     rub = G.Part("CHASSIS_BOOTS", "Rubber", smooth=50)
     for y0, rear in ((FA, False), (RA, True)):
         for s in (-1, 1):
-            hub = (s * 0.72, y0, WHEEL_Z - 0.12)
+            hw = (TRACK_R if rear else TRACK_F) / 2
+            hub = (s * (hw - 0.14), y0, WHEEL_Z - 0.12)
             for dy in (-0.16, 0.16):
                 arms.add(G.tube([(s * 0.30, y0 + dy, 0.24), hub], 0.016, segs=10, smooth=False))
-            top = (s * 0.70, y0, WHEEL_Z + 0.17)
+            top = (s * (hw - 0.16), y0, WHEEL_Z + 0.17)
             for dy in (-0.12, 0.12):
                 arms.add(G.tube([(s * 0.42, y0 + dy, 0.56), top], 0.014, segs=10, smooth=False))
             arms.add(G.sphere(0.022, 10), loc=hub)
             arms.add(G.sphere(0.02, 10), loc=top)
             if rear:      # half shafts with CV boots
-                arms.add(G.tube([(s * 0.16, y0, 0.36), (s * 0.66, y0, WHEEL_Z)], 0.022, segs=14, smooth=False))
-                for x in (0.22, 0.60):
+                arms.add(G.tube([(s * 0.16, y0, 0.36), (s * (hw - 0.18), y0, WHEEL_Z)], 0.022, segs=14, smooth=False))
+                for x in (0.22, hw - 0.24):
                     rub.add(G.lathe([(0.022, -0.04), (0.045, -0.02), (0.035, 0.0), (0.045, 0.02), (0.022, 0.04)],
-                                    segs=20, uv=False), loc=(s * x, y0, 0.36 + (WHEEL_Z - 0.36) * (x - 0.16) / 0.5))
+                                    segs=20, uv=False), loc=(s * x, y0, 0.36 + (WHEEL_Z - 0.36) * (x - 0.16) / (hw - 0.34)))
             else:         # steering rack + tie rods
-                arms.add(G.tube([(s * 0.30, y0 - 0.13, 0.30), (s * 0.74, y0 - 0.13, WHEEL_Z - 0.03)], 0.011,
+                arms.add(G.tube([(s * 0.30, y0 - 0.13, 0.30), (s * (hw - 0.12), y0 - 0.13, WHEEL_Z - 0.03)], 0.011,
                                 segs=10, smooth=False))
                 rub.add(G.lathe([(0.012, -0.05), (0.03, -0.03), (0.02, 0.0), (0.03, 0.03), (0.012, 0.05)], segs=16,
                                 uv=False), loc=(s * 0.32, y0 - 0.13, 0.30))

@@ -312,7 +312,7 @@ def build_library(tex_dir, tyre_band=(0.02, 0.27)):
     L.add("Gauge_Boost", tex_gauge(label="BOOST PSI", maxv=6, redline=4.5), rough=0.3)
     L.add("Plate", tex_plate(), rough=0.4)
     # glass & lights
-    L.add("Glass", _solid((0.04, 0.05, 0.06), 32), rough=0.03, alpha=0.22)
+    L.add("Glass", _solid((0.05, 0.06, 0.07), 32), rough=0.03, alpha=0.10)
     L.add("Lens_Clear", _solid((0.6, 0.62, 0.65), 32), rough=0.03, alpha=0.18)
     L.add("Lens_Red", _solid((0.5, 0.01, 0.01), 32), rough=0.05, alpha=0.65)
     L.add("Lens_Amber", _solid((0.8, 0.35, 0.02), 32), rough=0.05, alpha=0.7)

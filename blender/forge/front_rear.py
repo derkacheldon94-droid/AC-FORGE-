@@ -57,31 +57,38 @@ def headlamps(col, M):
         p.build(col, M)
 
 
+BOWTIE = [(-1.00, 0.30), (-0.40, 0.30), (-0.32, 0.72), (0.32, 0.72), (0.40, 0.30), (1.00, 0.30),
+          (0.92, -0.30), (0.40, -0.30), (0.32, -0.72), (-0.32, -0.72), (-0.40, -0.30), (-0.92, -0.30)]
+
+
 def grille(col, M):
+    """Two honeycomb panels (upper and lower) with a centre divider band that carries the bowtie
+    and the Z71 badge, matching the drawn art and the photo reference."""
     frame = G.Part("FRONT_GRILLE_FRAME", "Gloss_Black", smooth=40)
     mesh = G.Part("FRONT_GRILLE_MESH", "Grille_Mesh", smooth=0, uv_scale=5)
-    zc, h, w = 0.795, 0.33, 1.12
-    mesh.add(G.box((w, 0.01, h)), loc=(0, Y0 + 0.012, zc))
-    for dz in (-h / 2, h / 2):
-        frame.add(G.box((w + 0.05, 0.05, 0.03), r=0.01), loc=(0, Y0 + 0.025, zc + dz))
-    for dx in (-w / 2, w / 2):
-        frame.add(G.box((0.03, 0.05, h + 0.03), r=0.01), loc=(dx, Y0 + 0.025, zc))
-    for dz in (-0.055, 0.055):                                     # horizontal bars
-        frame.add(G.box((w, 0.035, 0.022), r=0.008), loc=(0, Y0 + 0.03, zc + dz))
-    # centre badge
-    frame.add(G.box((0.26, 0.03, 0.085), r=0.02), loc=(0, Y0 + 0.042, zc))
-    chrome = G.Part("BADGE_FRONT", "Chrome", smooth=40)
-    ring = [Vector((x, Y0 + 0.058, zc + z)) for x, z in G.fillet_poly([(-0.13, -0.042), (0.13, -0.042),
-                                                                        (0.13, 0.042), (-0.13, 0.042)], 0.02, k=5)]
-    chrome.add(G.sweep(ring, G.circle2d(0.004, 6), closed=True))
-    # (the plate is left blank where the bowtie goes)
+    w, band_z, band_h = 1.12, 0.7925, 0.075
+    for zc, h in ((0.8975, 0.135), (0.6875, 0.135)):
+        mesh.add(G.box((w - 0.04, 0.012, h - 0.028)), loc=(0, Y0 + 0.014, zc))
+        for dz in (-h / 2, h / 2):
+            frame.add(G.box((w + 0.03, 0.05, 0.022), r=0.008), loc=(0, Y0 + 0.025, zc + dz))
+        for dx in (-w / 2, w / 2):
+            frame.add(G.box((0.024, 0.05, h + 0.022), r=0.008), loc=(dx, Y0 + 0.025, zc))
+    frame.add(G.box((w + 0.03, 0.058, band_h), r=0.012), loc=(0, Y0 + 0.029, band_z))
+    # bowtie: black fill with a red outline (a generic bowtie shape, drawn from the reference art)
+    bw, bh = 0.095, 0.0345
+    pts = [(x * bw, z * bh) for x, z in BOWTIE]
+    fill = G.fillet_poly(pts, 0.004, k=3)
+    frame.add(G.prism(fill, 0.010, axis="Y"), loc=(0, Y0 + 0.062, band_z))
+    badge = G.Part("BADGE_FRONT", "Caliper_Red", smooth=40)
+    ring_path = [Vector((x, Y0 + 0.066, band_z + z)) for x, z in G.fillet_poly(pts, 0.004, k=3)]
+    badge.add(G.sweep(ring_path, G.rrect2d(0.008, 0.0055, 0.002, k=2), closed=True, up_hint=(0, 1, 0)))
+    badge.build(col, M)
     z71 = G.Part("BADGE_FRONT_Z71", "Caliper_Red", smooth=30)
-    z71.add(G.text("Z71", size=0.06, depth=0.005), matrix=G.basis((-0.22, Y0 + 0.05, zc), (-1, 0, 0), (0, 0, 1),
+    z71.add(G.text("Z71", size=0.050, depth=0.005), matrix=G.basis((-0.27, Y0 + 0.062, band_z), (-1, 0, 0), (0, 0, 1),
                                                                   (0, 1, 0)))
     z71.build(col, M)
     frame.build(col, M)
     mesh.build(col, M)
-    chrome.build(col, M)
 
 
 def bumper_front(col, M):

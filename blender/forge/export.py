@@ -10,7 +10,8 @@ from . import kn5
 
 KN5_VERT_LIMIT = 65000          # a kn5 mesh holds at most 65,535 vertices (16-bit indices): a hard format limit
 VERTEX_BUDGET = 200_000         # total in-game vertices for the full-detail model (LOD A, incl. COCKPIT_LR)
-PROTECTED = ("LIGHT_", "GLASS", "BODY_SHELL", "BODY_CAB_TOP", "BODY_FLARES", "WHEEL_", "STEER_", "DISC_", "RIM_BLUR")
+PROTECTED = ("LIGHT_", "GLASS", "BODY_SHELL", "BODY_CAB_TOP", "BODY_HOOD", "BODY_FLARES", "WIDEBODY_", "WHEEL_", "STEER_",
+             "DISC_", "RIM_BLUR")
 
 # objects whose name starts with one of these are dropped at each LOD level
 DROP = {

@@ -11,7 +11,7 @@ Real-world reference: 1994 Chevrolet/GMC GMT400 C/K1500 regular cab, short (6.5 
 """
 WB = 2.98
 FA, RA = WB / 2, -WB / 2
-TRACK_F, TRACK_R = 1.72, 1.70
+TRACK_F, TRACK_R = 1.84, 1.84    # wide-body stance: tyres flush with the over-fenders
 TYRE_R = 0.355
 RIM_R = 0.254
 TYRE_W_F, TYRE_W_R = 0.285, 0.335
@@ -39,6 +39,6 @@ DOOR_REAR_Y = -0.22
 
 # bed-mounted twin turbo: exhaust exits through the bed side ("box") just ahead of the rear wheels
 EXIT_Y = (-0.80, -0.90)
-EXIT_Z = 0.42
+EXIT_Z = 0.36                 # low on the box side, at rocker level (wireframe drawings)
 EXIT_R = 0.042
 BED_KIT_SHIFT = 0.30          # turbo kit sits this far forward of where it was first modelled

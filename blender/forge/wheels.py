@@ -44,21 +44,22 @@ def _tyre(hw):
 
 
 def _spokes(hw):
+    """Ten thin spokes laid over ten reverse-twisted ones: the crossing 'star mesh' pattern of the art."""
     bm_list = []
     a_hub, a_out = hw - 0.034, hw - 0.064
     r_hub, r_out = 0.078, RIM_R - 0.034
-    for i in range(7):
-        base = G.TAU * i / 7
-        for side in (-1, 1):
+    for i in range(10):
+        base = G.TAU * i / 10
+        for side, layer in ((1, 0.0), (-1, 0.007)):
             pts = []
             for j in range(9):
                 t = j / 8
                 r = r_hub + (r_out - r_hub) * t
-                th = base + side * (0.045 + 0.085 * t ** 1.2)
-                a = a_hub + (a_out - a_hub) * (t ** 0.8) - 0.006 * math.sin(math.pi * t)
+                th = base + side * (0.03 + 0.20 * t ** 1.3)
+                a = a_hub + (a_out - a_hub) * (t ** 0.8) - 0.006 * math.sin(math.pi * t) + layer * math.sin(math.pi * t)
                 pts.append((a, r * math.cos(th), r * math.sin(th)))
-            bm_list.append(G.sweep(pts, G.rrect2d(0.028, 0.026, 0.008, k=3), up_hint=(1, 0, 0),
-                                   scale=lambda t: 1.0 - 0.25 * t))
+            bm_list.append(G.sweep(pts, G.rrect2d(0.020, 0.015, 0.006, k=3), up_hint=(1, 0, 0),
+                                   scale=lambda t: 1.0 - 0.30 * t))
     return bm_list
 
 

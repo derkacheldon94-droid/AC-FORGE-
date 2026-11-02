@@ -146,8 +146,8 @@ def ui_json(car_dir, car_id, peak_hp, peak_nm, torque, power):
         "brand": "Chevrolet",
         "class": "street",
         "country": "USA",
-        "description": ("1994 Silverado Z71 short-bed regular cab on a carbon wide-body kit. Iron V8 in an open front bay "
-                        "under a carbon twin-oval airbox; bed-mounted twin-turbo system with the exhaust exiting through "
+        "description": ("1994 Silverado Z71 short-bed regular cab on a carbon wide-body kit. Iron V8 under a hood with a cut-out "
+                        "for the carbon twin-oval airbox; bed-mounted twin-turbo system with the exhaust exiting through "
                         "both sides of the box just ahead of the rear wheels. Red buckets with harnesses, roll cage, "
                         "strapped aluminium fuel cell in the open bed, 20-inch split-spoke wheels. RWD, 6-speed manual."),
         "tags": ["#Street", "rwd", "manual", "turbo", "pickup", "drift", "v8", "usa", "widebody"],

@@ -232,15 +232,15 @@ def headers(col, M):
 
 def bay_misc(col, M):
     brace = G.Part("ENGINE_STRUT_BRACE", "Caliper_Red", smooth=50)
-    brace.add(G.tube([(-0.80, 1.55, 1.02), (-0.4, 1.20, 1.10), (0.4, 1.20, 1.10), (0.80, 1.55, 1.02)], 0.018,
+    brace.add(G.tube([(-0.80, 1.55, 0.995), (-0.4, 1.08, 1.005), (0.4, 1.08, 1.005), (0.80, 1.55, 0.995)], 0.018,
                      segs=14, per_seg=6))
     brace.build(col, M)
     plates = G.Part("ENGINE_SMALL_BRACE_PLATES", "Brushed_Alu", smooth=40)
     for s in (-1, 1):
-        plates.add(G.cyl(0.075, 0.012, segs=32), loc=(s * 0.80, 1.55, 1.015))
+        plates.add(G.cyl(0.075, 0.012, segs=32), loc=(s * 0.80, 1.55, 0.99))
         for k in range(3):
             a = G.TAU * k / 3
-            plates.add(G.bolt(0.008, 0.02), loc=(s * 0.80 + 0.05 * math.cos(a), 1.55 + 0.05 * math.sin(a), 1.025))
+            plates.add(G.bolt(0.008, 0.02), loc=(s * 0.80 + 0.05 * math.cos(a), 1.55 + 0.05 * math.sin(a), 1.0))
     plates.build(col, M)
     bk = G.Part("ENGINE_BOOSTER", "Engine_Dark", smooth=40)
     bk.add(G.lathe([(0.02, 0.0), (0.13, 0.0), (0.135, 0.03), (0.135, 0.08), (0.12, 0.11), (0.02, 0.11)], segs=48,
