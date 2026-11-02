@@ -58,7 +58,7 @@ def valve_covers(col, M):
             vc.add(G.box((0.010, 0.44, 0.016), r=0.004), matrix=m @ G.xf((k * 0.026, 0.06, 0.036)))
         for j in range(6):
             for side in (-1, 1):
-                bolts.add(G.cyl(0.006, 0.012, segs=6), matrix=m @ G.xf((side * 0.07, -0.26 + j * 0.104, 0.03)))
+                bolts.add(G.bolt(0.006, 0.012), matrix=m @ G.xf((side * 0.07, -0.26 + j * 0.104, 0.03)))
         txt.add(G.text("CHEVROLET", size=0.024, depth=0.003), matrix=m @ G.xf((0, -0.10, 0.0335), (0, 0, s * math.pi / 2)))
         # oil cap / breather filter on top of each cover
         caps.add(G.cyl(0.026, 0.02, segs=24), matrix=m @ G.xf((0.0, 0.22, 0.045)))
@@ -120,7 +120,7 @@ def intake(col, M):
             y = YC - 0.235 + i * 0.155
             rails.add(G.cyl(0.008, 0.04, segs=10), loc=(s * 0.16, y, 0.96), rot=(0, s * 0.5, 0))
         for y in (YC - 0.32, YC + 0.32):
-            fittings.add(G.cyl(0.013, 0.025, segs=6), loc=(s * 0.145, y, 0.985), rot=(math.pi / 2, 0, 0))
+            fittings.add(G.bolt(0.013, 0.025), loc=(s * 0.145, y, 0.985), rot=(math.pi / 2, 0, 0))
         braided.add(G.tube([(s * 0.145, YC - 0.335, 0.985), (s * 0.15, YC - 0.42, 0.97), (s * 0.30, 1.0, 0.82),
                             (s * 0.55, 0.98, 0.60)], 0.008, segs=8))
     for p in (rails, fittings, braided):
@@ -240,7 +240,7 @@ def bay_misc(col, M):
         plates.add(G.cyl(0.075, 0.012, segs=32), loc=(s * 0.80, 1.55, 1.015))
         for k in range(3):
             a = G.TAU * k / 3
-            plates.add(G.cyl(0.008, 0.02, segs=6), loc=(s * 0.80 + 0.05 * math.cos(a), 1.55 + 0.05 * math.sin(a), 1.025))
+            plates.add(G.bolt(0.008, 0.02), loc=(s * 0.80 + 0.05 * math.cos(a), 1.55 + 0.05 * math.sin(a), 1.025))
     plates.build(col, M)
     bk = G.Part("ENGINE_BOOSTER", "Engine_Dark", smooth=40)
     bk.add(G.lathe([(0.02, 0.0), (0.13, 0.0), (0.135, 0.03), (0.135, 0.08), (0.12, 0.11), (0.02, 0.11)], segs=48,

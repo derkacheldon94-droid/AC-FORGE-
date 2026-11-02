@@ -167,7 +167,7 @@ def tex_plate(w=1024, h=512, txt="FORGE 01"):
     d = ImageDraw.Draw(img)
     d.rounded_rectangle((8, 8, w - 8, h - 8), radius=30, outline=(20, 20, 20), width=10)
     d.text((w / 2, h * 0.16), "AC FORGE GARAGE", font=_font(int(h * 0.11)), fill=(170, 20, 20), anchor="mm")
-    d.text((w / 2, h * 0.58), txt, font=_font(int(h * 0.42), FONT_COND), fill=(15, 15, 20), anchor="mm")
+    d.text((w / 2, h * 0.58), txt, font=_font(int(h * 0.33), FONT_COND), fill=(15, 15, 20), anchor="mm")
     for x in (0.12, 0.88):
         d.ellipse((w * x - 14, h * 0.5 - 14, w * x + 14, h * 0.5 + 14), fill=(120, 120, 120))
     return img
@@ -188,7 +188,7 @@ def tex_rim_blur(size=512):
     return Image.fromarray(img.clip(0, 255).astype(np.uint8), "RGBA")
 
 
-def tex_tyre(w=2048, h=512, v_side_out=(0.02, 0.27), flip=True):
+def tex_tyre(w=2048, h=512, v_side_out=(0.02, 0.27), flip=True, size_txt="285/35 R20"):
     """Tyre atlas: u around the tyre, v along the lathe profile. Lettering on the outer sidewall band."""
     base = np.full((h, w, 3), 18, np.float32)
     base += RNG.normal(0, 2.0, (h, w, 1))
@@ -204,7 +204,7 @@ def tex_tyre(w=2048, h=512, v_side_out=(0.02, 0.27), flip=True):
         x0 = k * w / 2
         td.text((x0 + w * 0.13, band * 0.5), "FORGE", font=f, fill=(105, 105, 108), anchor="mm")
         td.text((x0 + w * 0.32, band * 0.5), "SEMI-SLICK  R-COMPOUND", font=fs, fill=(88, 88, 90), anchor="mm")
-        td.text((x0 + w * 0.43, band * 0.5), "275/35 R20", font=fs, fill=(88, 88, 90), anchor="mm")
+        td.text((x0 + w * 0.43, band * 0.5), size_txt, font=fs, fill=(88, 88, 90), anchor="mm")
     if flip:   # lathe UVs run counter-clockwise seen from outside: mirror so text reads clockwise
         txt_img = txt_img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
     img.paste(txt_img, (0, h - v1))   # image rows run top-down, UV v runs bottom-up
@@ -296,7 +296,8 @@ def build_library(tex_dir, tyre_band=(0.02, 0.27)):
     L.add("Rim_Red", _solid((0.40, 0.012, 0.012), 128, noise=0.005), metal=0.55, rough=0.25)
     L.add("Rim_Lip", tex_brushed((0.80, 0.80, 0.82), 256, vertical=True), metal=1.0, rough=0.1)
     L.add("Rim_Blur", tex_rim_blur(), metal=0.5, rough=0.3)
-    L.add("Tyre", tex_tyre(v_side_out=tyre_band), rough=0.92)
+    L.add("Tyre_Front", tex_tyre(v_side_out=tyre_band, size_txt="285/35 R20"), rough=0.92)
+    L.add("Tyre_Rear", tex_tyre(v_side_out=tyre_band, size_txt="335/30 R20"), rough=0.92)
     L.add("Brake_Disc", tex_disc(), metal=0.95, rough=0.35)
     L.add("Caliper_Red", _solid((0.55, 0.02, 0.02), 64), rough=0.25)
     L.add("Decal_White", _solid((0.85, 0.85, 0.85), 32), rough=0.4)

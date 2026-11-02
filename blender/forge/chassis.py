@@ -6,9 +6,9 @@ import math
 import bpy  # noqa: F401
 
 from . import geo as G
-from .dims import FA, FRONT_Y, RA, WHEEL_Z
+from .dims import BED_KIT_SHIFT, FA, FRONT_Y, RA, WHEEL_Z
 
-TY = -1.17
+TY = -1.17 + BED_KIT_SHIFT
 
 
 def build(col, M):
@@ -55,11 +55,11 @@ def build(col, M):
     wrap = G.Part("CHASSIS_EXHAUST_CROSSOVER", "Heat_Wrap", smooth=50, uv_scale=12)
     for s in (-1, 1):
         at = s * 0.36 - s * 0.085
-        wrap.add(G.tube([(s * 0.40, 1.10, 0.44), (s * 0.42, 0.95, 0.20), (s * 0.40, -0.80, 0.19),
+        wrap.add(G.tube([(s * 0.40, 1.10, 0.44), (s * 0.42, 0.95, 0.20), (s * 0.40, -0.55, 0.19),
                          (at + s * 0.02, TY - 0.17, 0.20), (at + s * 0.01, TY - 0.21, 0.57)], 0.045, segs=16))
     wrap.build(col, M)
     # charge pipe: centre plenum -> under the floor -> front intercooler (left tank)
     pol = G.Part("CHASSIS_CHARGE_PIPE", "Metal_Polished", smooth=50)
-    pol.add(G.tube([(0, -0.98, 0.58), (-0.05, -0.90, 0.21), (-0.22, -0.50, 0.19), (-0.22, 1.60, 0.19),
+    pol.add(G.tube([(0, -0.98 + BED_KIT_SHIFT, 0.58), (-0.05, -0.90 + BED_KIT_SHIFT, 0.21), (-0.22, -0.40, 0.19), (-0.22, 1.60, 0.19),
                     (-0.55, FRONT_Y - 0.05, 0.22), (-0.60, FRONT_Y + 0.07, 0.27)], 0.045, segs=18))
     pol.build(col, M)

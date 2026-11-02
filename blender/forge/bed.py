@@ -7,10 +7,14 @@ import bpy  # noqa: F401
 from mathutils import Vector
 
 from . import geo as G
-from .dims import BED_FLOOR_Z, BODY_X, EXIT_R, EXIT_Y, EXIT_Z, REAR_Y
+from .dims import BED_FLOOR_Z, BED_KIT_SHIFT, BODY_X, EXIT_R, EXIT_Y, EXIT_Z, REAR_Y
 
 TY, TZ = -1.17, 0.98
 CX = 0.36
+# the whole turbo kit is modelled around y = -1.17 and then moved forward by BED_KIT_SHIFT (Part.post);
+# the exit pipes are therefore built at the matching un-shifted station so the tips line up with the body cut-outs
+EY = [y - BED_KIT_SHIFT for y in EXIT_Y]
+EYM = sum(EY) / len(EY)
 
 
 def _spiral(a, R0, dR, r0, dr, turns=0.92, out_len=0.08, n=44):
@@ -44,7 +48,7 @@ def turbo(s, P):
         a = G.TAU * k / 10
         P["blades"].add(G.box((0.05, 0.003, 0.04)),
                         matrix=G.xf((ac + s * 0.085, TY, TZ), (a, 0, 0)) @ G.xf((0, 0, 0.035), (0, 0.5 * s, 0)))
-    P["chrome"].add(G.cyl(0.012, 0.03, segs=6), loc=(ac + s * 0.10, TY, TZ), rot=(0, math.pi / 2, 0))
+    P["chrome"].add(G.bolt(0.012, 0.03), loc=(ac + s * 0.10, TY, TZ), rot=(0, math.pi / 2, 0))
     # centre cartridge
     P["alu"].add(G.lathe([(0.03, -0.06), (0.05, -0.06), (0.055, -0.03), (0.055, 0.03), (0.05, 0.06), (0.03, 0.06)],
                          segs=32, uv=False), loc=(s * CX, TY, TZ))
@@ -78,10 +82,10 @@ def turbo(s, P):
     # downpipe: turbine outlet -> down through the bed floor -> forward -> split into twin exits
     o = Vector((at - s * 0.12, TY, TZ))
     P["wrap"].add(G.tube([o, o + Vector((-s * 0.08, 0.0, -0.02)), Vector((s * 0.12, TY + 0.04, 0.70)),
-                          Vector((s * 0.14, TY + 0.10, BED_FLOOR_Z - 0.08)), Vector((s * 0.30, -1.0, EXIT_Z))],
+                          Vector((s * 0.14, TY + 0.10, BED_FLOOR_Z - 0.08)), Vector((s * 0.30, EYM, EXIT_Z))],
                          0.05, segs=16))
-    for y in EXIT_Y:
-        P["polish"].add(G.tube([(s * 0.30, -1.0, EXIT_Z), (s * 0.45, y, EXIT_Z), (s * (BODY_X - 0.05), y, EXIT_Z)],
+    for y in EY:
+        P["polish"].add(G.tube([(s * 0.30, EYM, EXIT_Z), (s * 0.45, y, EXIT_Z), (s * (BODY_X - 0.05), y, EXIT_Z)],
                                EXIT_R - 0.004, segs=20))
         tip = [(EXIT_R - 0.004, -0.06), (EXIT_R, -0.06), (EXIT_R + 0.004, 0.01), (EXIT_R + 0.002, 0.03),
                (EXIT_R - 0.004, 0.03), (EXIT_R - 0.006, -0.02)]
@@ -125,14 +129,14 @@ def fuel_cell_battery_coilovers(col, M):
     for x in (-0.33, 0.33):                                         # black straps wrapping the cell
         sm.add(G.box((0.06, 0.41, 0.012), r=0.004), loc=(x, yc, zc + 0.152))
         sm.add(G.box((0.06, 0.012, 0.36), r=0.004), loc=(x, yc - 0.205, zc - 0.02))
-        brass.add(G.cyl(0.013, 0.02, segs=6), loc=(x, yc - 0.215, zc - 0.17), rot=(math.pi / 2, 0, 0))
+        brass.add(G.bolt(0.013, 0.02), loc=(x, yc - 0.215, zc - 0.17), rot=(math.pi / 2, 0, 0))
     sm.add(G.cyl(0.075, 0.012, segs=48), loc=(0, yc, zc + 0.156))      # filler flange + cap
     sm.add(G.cyl(0.045, 0.03, segs=32), loc=(0, yc, zc + 0.175))
     for k in range(12):
         a = G.TAU * k / 12
-        chrome.add(G.cyl(0.006, 0.01, segs=6), loc=(0.062 * math.cos(a), yc + 0.062 * math.sin(a), zc + 0.165))
+        chrome.add(G.bolt(0.006, 0.01), loc=(0.062 * math.cos(a), yc + 0.062 * math.sin(a), zc + 0.165))
     for x, part in ((-0.45, red), (-0.40, blue), (0.40, red), (0.45, blue)):
-        part.add(G.cyl(0.013, 0.03, segs=6), loc=(x, yc + 0.1, zc + 0.165))
+        part.add(G.bolt(0.013, 0.03), loc=(x, yc + 0.1, zc + 0.165))
     braid.add(G.tube([(-0.45, yc + 0.1, zc + 0.18), (-0.50, yc + 0.3, zc + 0.20), (-0.62, -1.0, BED_FLOOR_Z + 0.02),
                       (-0.62, -0.93, BED_FLOOR_Z)], 0.008, segs=8))
     # battery + tray + cut-off switch
@@ -212,10 +216,12 @@ def build(col, M):
     }
     for s in (-1, 1):
         turbo(s, P)
+    G.Part.post = G.xf((0, BED_KIT_SHIFT, 0))        # slide the whole turbo kit up behind the cab
     for p in P.values():
         p.build(col, M)
     shield = G.Part("TURBO_HEAT_SHIELD", "Heat_Gold", smooth=0, uv_scale=4)
     shield.add(G.box((1.30, 0.55, 0.004), r=0.002), loc=(0, TY - 0.05, BED_FLOOR_Z + 0.035))
     shield.build(col, M)
-    fuel_cell_battery_coilovers(col, M)
     plenum(col, M)
+    G.Part.post = None
+    fuel_cell_battery_coilovers(col, M)

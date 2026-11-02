@@ -1,8 +1,8 @@
 # AC Forge: '94 Silverado Z71 Twin Turbo
 
-A high-detail **1994 Chevrolet Silverado Z71** regular cab for **Assetto Corsa**. The truck is slammed on riveted carbon wide-body flares. It has an iron V8 in an open front bay and a **rear bed-mounted twin-turbo system** whose exhaust exits **through both sides of the box, just ahead of the rear wheels**.
+A high-detail **1994 Chevrolet Silverado Z71** short-bed regular cab for **Assetto Corsa**, built to real GMT400 dimensions. The truck is slammed on riveted carbon wide-body flares. It has an iron V8 in an open front bay and a **rear bed-mounted twin-turbo system** whose exhaust exits **through both sides of the box, just ahead of the rear wheels**.
 
-Everything is generated from code. The 3D model comes from Blender scripts in `blender/forge/`, and the physics are plain-text `.ini` files.
+Everything is generated from code. The 3D model comes from Blender scripts in `blender/forge/`, and the physics are plain-text `.ini` files. The build writes the game's own **`.kn5` model files** directly, so you don't need the AC Editor (ksEditor), and it zips the whole car folder for **Content Manager**.
 
 | | |
 |---|---|
@@ -12,40 +12,74 @@ Everything is generated from code. The 3D model comes from Blender scripts in `b
 
 ![side](blender/out/preview_side.png)
 
+## Install on PC (Assetto Corsa + Content Manager)
+
+1. **Get the zip:** `dist/acf_blackout_pickup.zip` (24 MB) in this repo. It holds one folder, `acf_blackout_pickup`, with the four model files, data, skin and UI assets.
+2. **Install it:** drag the zip onto the Content Manager window and accept the install prompt. To install by hand instead, unzip it so you get `assettocorsa\content\cars\acf_blackout_pickup`.
+3. **Add the engine sound (required):** a car needs a sound folder (`sfx`), and the sound banks can't be generated here. In Content Manager, open **Content → Cars**, pick *Chevrolet Silverado Z71 1994 Twin Turbo*, and use its **Replace sound** action with a V8 donor car (a stock Kunos V8 such as the Corvette or Mustang). Do this before you drive, or the car may fail to load.
+4. **Check it in the showroom:** use Content Manager's showroom (or Quick Drive → pick the car). Look for:
+   - wheels sitting in the arches (adjust `GRAPHICS_OFFSET` in `data/car.ini` if not),
+   - the driver camera in the left seat (`DRIVEREYES` in `data/car.ini`),
+   - lights, steering wheel and wheel blur working.
+5. **Drive it.** The physics follow Kunos formats but were never driven in game, so expect to tune `tyres.ini`, `suspensions.ini` and `drivetrain.ini`. Content Manager's data editor and its error log will tell you about any missing key.
+
+Not included: sound banks (step 3), a driver model, and animated doors or wipers.
+
+## Vertex budget
+
+| | In-game vertices | Triangles | File |
+|---|---|---|---|
+| LOD A (full detail, with the low-res interior) | 197,855 | 205,000 | `acf_blackout_pickup.kn5` |
+| LOD B | 80,800 | 80,500 | `acf_blackout_pickup_B.kn5` |
+| LOD C | 38,800 | 34,200 | `acf_blackout_pickup_C.kn5` |
+| LOD D | 19,000 | 15,400 | `acf_blackout_pickup_D.kn5` |
+
+- **Counted the way the game counts:** a vertex is one unique position, normal and UV, which is what the `.kn5` file stores.
+- **Total budget: 200,000.** `VERTEX_BUDGET` in `blender/forge/export.py` caps LOD A. Fasteners, small engine and turbo parts, interior and text are trimmed to fit. Body panels, flares, tyres, rotors, glass and lights are never touched. Raise the constant to keep more detail.
+- **Per-mesh limit: 65,535.** This is the `.kn5` format's own limit (16-bit indices), so it can't be raised. The largest mesh here has 17,508 vertices, and the exporter splits any mesh that gets near the limit.
+
+## Real-world specs
+
+The layout follows a 1994 Chevrolet C/K1500 (GMT400) **regular cab, short (6.5 ft) bed**. The wide-body kit sits on top of it.
+
+| | Real truck | Model |
+|---|---|---|
+| Wheelbase | 117.5 in (2.985 m) | 117.3 in (2.98 m) |
+| Body width (stock panels) | 76.8 in (1.95 m) | 78.4 in (1.99 m), includes the barrel curvature of the panels |
+| Width over the wide-body flares | n/a | 86.9 in (2.21 m), about 5 in extra per side |
+| Cab length (firewall to back) | roughly 50 in | 52 in (1.32 m) |
+| Door length | roughly 42 in | 43 in (1.10 m) |
+| Box (bed) inside length | 78 in (1.98 m) | 78 in (1.98 m) |
+| Overall length | ~194 in (4.93 m) with bumpers | 4.70 m sheet metal, 5.33 m with bumpers and splitter |
+| Tyres | n/a | 285/35 R20 front, 335/30 R20 rear on 20" rims (radius 0.355 m) |
+| Height | 70.3 in (1.79 m) stock | 63.0 in (1.60 m), lowered about 7 in |
+
+The real-truck figures are approximate factory numbers from memory, so check them against a factory spec sheet if you need exact values. The cab and bed were out of proportion in the first version (the cab about 17 in too long, the bed about 20 in too short). That is fixed.
+
 ## What's modelled
 
-- **Body:** a lofted GMT400 shell with the shoulder crease, door and cab-to-bed gaps, fuel door, flush handles and window seals.
-  - Carbon flares with rivets.
-  - Open bed with wheel tubs and ribbed liner. The bed has no tailgate.
-  - Red and white pinstripes.
-  - Z71 badges.
-- **Front:**
-  - Quad headlamps with LED light strips and projectors, honeycomb grille with a red Z71, slatted bumper intakes.
-  - Intercooler with end tanks and couplers.
-  - Carbon splitter with endplates, canards and support rods, plus a tow strap.
-  - Mirrors, wipers and a cowl.
+- **Curved body panels:** a lofted GMT400 shell, built from about 165 cross-sections of about 100 points each, then boolean-cut and bevelled (about 20,000 vertices).
+  - Barrel-shaped door and bedside panels with the shoulder crease, cab tumblehome, crowned roof and fender tops.
+  - Door shut lines, a separate door-glass pane, flush handle recesses, fuel door, rounded bed rail caps with stake pockets, and wheel tubs.
+  - Open bed with no tailgate.
+- **Wide-body kit:**
+  - Bolt-on carbon over-fenders on all four wheels. They have a stepped lip, hex bolts on two rows, and a rubber seal around the edge.
+  - Carbon side skirts that join the flares, with a splitter blade and a row of bolts.
+  - Carbon front splitter with endplates, canards and support rods, and a rear diffuser.
+- **Side-exit exhaust:** twin tips come out through **both sides of the box**, just ahead of the rear flares. Each exit has a cut in the panel and a machined trim ring with screws. The pipes run from the bed-mounted turbos to the exits.
+- **Front:** quad LED headlamps, honeycomb grille with a red Z71, slatted bumper intakes, intercooler with end tanks, a tow strap, mirrors, wipers and a cowl.
 - **Engine bay:**
-  - V8 long-block with finned red valve covers, coil packs, intake runners and twin throttle bodies under a carbon twin-oval airbox.
-  - Carbon intake tube with red bands to a cone filter, fuel rails with braided lines.
-  - Serpentine belt drive, radiator with fans, heat-wrapped headers, red strut brace, brake booster and master cylinder.
+  - V8 with finned red valve covers, coil packs, intake runners and twin throttle bodies under a carbon twin-oval airbox.
+  - Carbon intake tube with red bands to a cone filter, fuel rails with braided lines, belt drive, radiator with fans, wrapped headers, a red strut brace, booster and master cylinder.
 - **Bed twin-turbo kit:**
-  - Two turbos with snail-shell housings and visible compressor wheels.
-  - Silver charge pipes into a center plenum.
-  - Red cone filters, wastegates with screamer pipes, a gold heat shield.
-  - Diagonal inboard coilovers on an aluminium A-bracket.
-  - Strapped aluminium fuel cell low in the open back, plus the battery.
-- **Exhaust:** twin tips through **both** bed sides ahead of the rear wheels. Crossover pipes run from the headers back to the turbines under the cab.
+  - Two turbos with snail-shell housings and visible compressor blades, mounted right behind the cab.
+  - Silver charge pipes into a centre plenum, red cone filters, wastegates with screamer pipes, a gold heat shield.
+  - Diagonal inboard coilovers on an aluminium A-bracket, a strapped aluminium fuel cell low in the open back, and a battery.
 - **Wheels:**
   - 20" red split 7-spoke rims with polished riveted lips and hex lug nuts.
-  - Semi-slick tyres with sidewall lettering.
-  - Drilled two-piece rotors and 6-piston calipers.
+  - Semi-slick tyres with sidewall lettering, drilled two-piece rotors and 6-piston calipers.
   - Blurred rim discs for speed.
-- **Interior:**
-  - Red buckets with 5-point harnesses and a roll cage.
-  - Dash with tach and speedo, plus A-pillar boost gauges.
-  - A switch panel, pedals, shifter and hydraulic handbrake.
-  - A steering wheel that turns in game.
-  - Door cards, rear-view mirror and a fire extinguisher.
+- **Interior:** red buckets with 5-point harnesses, roll cage, dash with tach, speedo and boost gauges, switch panel, pedals, shifter, handbrake, a steering wheel that turns in game, door cards, mirror and fire extinguisher.
 
 ## Files
 
@@ -54,14 +88,16 @@ blender/build_truck.py            entry point
 blender/forge/                    geometry toolkit + one module per area (body, front_rear, engine, bed,
                                   interior, wheels, chassis), materials/textures, LOD + FBX export, renders
 blender/out/
-  acf_blackout_pickup.fbx           LOD A, full detail (~318k triangles, includes COCKPIT_LR)
-  acf_blackout_pickup_B/C/D.fbx     distance LODs (~114k / ~45k / ~19k triangles)
+  acf_blackout_pickup.fbx           LOD A, full detail (for ksEditor / Blender)
+  acf_blackout_pickup_B/C/D.fbx     distance LODs
   acf_blackout_pickup.blend         editable Blender scene
   acf_blackout_pickup.glb           quick look in any 3D viewer
   texture/*.png                     textures referenced by the FBX files
   preview_*.png                     renders
+dist/acf_blackout_pickup.zip      ready-to-install car for Content Manager
 content/cars/acf_blackout_pickup/
-  data/      physics, lights.ini, lods.ini, blurred_objects.ini ...
+  acf_blackout_pickup*.kn5          the four game models (LOD A-D)
+  data/      physics, lights.ini, lods.ini, blurred_objects.ini, setup.ini ...
   ui/        name, specs and curves for the car menu
   skins/     default skin
 ```
@@ -74,6 +110,8 @@ This needs Blender 4.2 or newer (tested on 5.1). The `bpy` module plus `pillow` 
 blender -b -P blender/build_truck.py -- --render
 ```
 
+Without `--render` the build takes under a minute and still writes the `.kn5` files, the car folder and the zip. The renders take about 20 minutes on a CPU.
+
 Options:
 - `--quick` renders fast low-sample previews.
 - `--views side,front_quarter` renders only some views.
@@ -84,32 +122,9 @@ The headlight style is the constant `LAMP_STYLE` in `blender/forge/front_rear.py
 - `"angled"` gives the angled LED strips from the photo-style reference.
 - `"bracket"` gives the square brackets from the drawn concept art.
 
-## Getting it into the game
+## Making models for other tools
 
-1. **Make the models:** in the **AC Editor** (`assettocorsa/sdk/editor/ksEditor.exe`), load each FBX with the `texture/` folder next to it.
-   - Set the shaders using the table below.
-   - Save `acf_blackout_pickup.fbx` as `acf_blackout_pickup.kn5`.
-   - Save `_B`, `_C` and `_D` as `acf_blackout_pickup_B.kn5`, `acf_blackout_pickup_C.kn5` and `acf_blackout_pickup_D.kn5`.
-   - Put all four `.kn5` files in `content/cars/acf_blackout_pickup/`. `data/lods.ini` switches between them by distance.
-2. **Install the car:** copy `content/cars/acf_blackout_pickup` into your game's `content/cars/` folder.
-3. **Add sound:** in **Content Manager**, use *Sound → Replace sound* with a V8 donor car. That creates `sfx/`.
-4. **Check the fit:** look at the car in the Showroom. Tweak `GRAPHICS_OFFSET` in `data/car.ini` until the wheels sit in the arches. If the cockpit camera is in the wrong seat, flip the sign of the first `DRIVEREYES` value.
-5. **Pack the data (optional):** once the physics are final, use *Car → Pack data*.
-
-### Shaders for ksEditor
-
-| Material | Shader | Notes |
-|---|---|---|
-| Paint_Black | `ksPerPixelMultiMap` | the skin repaints `Paint_Black.png` |
-| Carbon, Trim_Black, Gloss_Black, Interior_Black, Grille_Mesh, Bed_Liner, Rubber, Carpet | `ksPerPixel` | |
-| Chrome, Metal_Polished, Brushed_Alu, Cast_Alu, Rim_Lip, Mirror_Glass, Reflector, Heat_Gold | `ksPerPixel` | raise `ksSpecular`/`ksSpecularEXP` for shine |
-| Rim_Red, Caliper_Red, Valve_Red, Seat_Red, Strap_Red, Spring_Red, Silicone_Red, Filter_Red | `ksPerPixel` | |
-| Engine_Dark, Turbo_Hot, Heat_Wrap, Braided, Intercooler_Fins, Thread_Alu, Anodized_* | `ksPerPixel` | |
-| Tyre | `ksTyres` (or `ksPerPixel`) | sidewall lettering is in the texture |
-| Brake_Disc | `ksBrakeDisc` (or `ksPerPixel`) | |
-| Glass, Lens_Clear, Lens_Red, Lens_Amber, Rim_Blur | `ksPerPixelAlpha` | Alpha blend **on**, depth mode **read-only** |
-| Light_Head, Light_Tail, Light_Marker | `ksPerPixel` | `data/lights.ini` makes them glow |
-| Gauge_*, Plate, Decal_White | `ksPerPixel` | |
+The build also writes the FBX files (`acf_blackout_pickup.fbx` and `_B/_C/_D.fbx`), a `.blend` and a `.glb`. You only need them if you want to edit the model in ksEditor or Blender. In ksEditor, use the shader names from `content/cars/acf_blackout_pickup/` as a guide: `ksPerPixel` for everything, and `ksPerPixelAlpha` (alpha blend on, depth read-only) for `Glass`, `Lens_*` and `Rim_Blur`.
 
 ### Node names AC uses (already set in the model)
 
@@ -123,9 +138,16 @@ The headlight style is the constant `LAMP_STYLE` in `blender/forge/front_rear.py
 | `RIM_BLUR_*` | blurred rims (`data/blurred_objects.ini`) |
 | `LIGHT_HEAD_L/R`, `LIGHT_TAIL_L/R`, `LIGHT_BRAKE3`, `LIGHT_MARKER_F/R` | lights (`data/lights.ini`) |
 
+### How the `.kn5` is written
+
+`blender/forge/kn5.py` converts Blender space (right-handed, Z up, front +Y) to Assetto Corsa space (left-handed, Y up, front +Z, left side −X), reverses the triangle winding, flips V, and writes the file layout described at the top of that module. It was checked by reading the files back with a strict parser: no stray bytes, all indices in range, every texture embedded, and 99.99% of triangles wind consistently with their normals.
+
 ## Known limits
 
+- **Not tested in game:** I have no Windows, Assetto Corsa or Content Manager here. The `.kn5` files were checked by reading them back and by comparing the layout against public documentation and example cars, but nobody has loaded this truck yet. If Content Manager or the game reports a problem, send me the message or the log.
+- **Sound:** you must add it with Content Manager's Replace sound (see above).
+- **Physics:** the data follows Kunos formats but has never been driven. Expect to tune `tyres.ini` and `suspensions.ini`.
 - **Logos:** the bowtie is left as a blank badge plate. Add the logo in a skin texture if you want it.
 - **Missing parts:** there's no driver model, and the doors and wipers aren't animated.
-- **Untested physics:** the physics follow Kunos formats but haven't been driven yet. Expect to tune `tyres.ini` and `suspensions.ini`.
-- **`.ini` details:** the `lods.ini` and `blurred_objects.ini` formats come from Kunos cars. Check the switch distances and speeds in game.
+- **`setup.ini`:** the garage setup sections (pressures, camber, toe, fuel, brake bias and power) are modelled on Kunos examples, but the game hasn't read them yet.
+- **Textures:** they are generated colours, patterns and lettering, not photo textures.

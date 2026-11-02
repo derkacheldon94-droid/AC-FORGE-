@@ -151,6 +151,23 @@ def cyl(r, depth, segs=24, r2=None, caps=True):
     return bm
 
 
+def bolt(r, h, segs=6, top=0.78):
+    """Button-head fastener: a smooth frustum with no underside (12 vertices for a hex head), centred on Z."""
+    bm = _new()
+    base = [bm.verts.new((r * math.cos(TAU * i / segs), r * math.sin(TAU * i / segs), -h / 2)) for i in range(segs)]
+    tp = [bm.verts.new((r * top * math.cos(TAU * i / segs), r * top * math.sin(TAU * i / segs), h / 2))
+          for i in range(segs)]
+    for i in range(segs):
+        j = (i + 1) % segs
+        bm.faces.new((base[i], base[j], tp[j], tp[i]))
+    bm.faces.new(tp)
+    return bm
+
+
+def washer(r, h, segs=10):
+    return bolt(r, h, segs=segs, top=0.9)
+
+
 def sphere(r, segs=16):
     bm = _new()
     bmesh.ops.create_uvsphere(bm, u_segments=segs, v_segments=max(6, segs // 2), radius=r)
@@ -306,6 +323,11 @@ def text(body, size=0.1, depth=0.002, bevel=0.0, font_path=None):
     cu = bpy.data.curves.new("txt", "FONT")
     cu.body = body
     cu.size = size
+    cu.resolution_u = 2
+    try:
+        cu.render_resolution_u = 2
+    except Exception:
+        pass
     cu.extrude = depth / 2
     cu.bevel_depth = bevel
     cu.align_x = "CENTER"
@@ -407,6 +429,8 @@ class Part:
 
     def __init__(self, name, material, parent=None, smooth=35, uv_scale=1.0, group=None):
         self.name, self.material, self.parent = name, material, parent
+        if name.startswith(("BOLTS_", "DETAIL_BOLTS")) or "_RIVET" in name:
+            smooth = 85                                  # fasteners are shaded fully smooth (cheap in vertices)
         self.smooth, self.uv_scale, self.group = smooth, uv_scale, group
         self.bm = _new()
 

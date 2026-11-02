@@ -7,9 +7,10 @@ import bpy
 from mathutils import Vector
 
 from . import geo as G
-from .dims import CAB_FLOOR_Z, DRIVER_X
+from .dims import CAB_BACK_Y, CAB_FLOOR_Z, DRIVER_X
 
-SEAT_Y, SEAT_Z = -0.34, 0.47
+SEAT_Y, SEAT_Z = 0.0, 0.47
+CB = CAB_BACK_Y + 0.05       # cage hoop / harness bar station
 
 
 def _empty(name, col, loc=(0, 0, 0), rot=(0, 0, 0), parent=None):
@@ -33,7 +34,7 @@ def seats(cp, col, M):
         red.add(G.box((0.36, 0.08, 0.06), r=0.03), matrix=base @ G.xf((0, 0.27, 0.03)))
         for s in (-1, 1):
             red.add(G.box((0.075, 0.46, 0.15), r=0.035), matrix=base @ G.xf((s * 0.235, 0.05, 0.04), (0, s * 0.12, 0)))
-        back = base @ G.xf((0, -0.20, 0.02), (0.24, 0, 0))
+        back = base @ G.xf((0, -0.20, 0.02), (0.14, 0, 0))
         red.add(G.box((0.44, 0.075, 0.74), r=0.035), matrix=back @ G.xf((0, -0.03, 0.37)))
         for s in (-1, 1):
             red.add(G.box((0.085, 0.22, 0.52), r=0.04), matrix=back @ G.xf((s * 0.25, 0.06, 0.30), (0, 0, -s * 0.25)))
@@ -54,13 +55,13 @@ def harnesses(cp, col, M):
     for x in (DRIVER_X, -DRIVER_X):
         lock = Vector((x, SEAT_Y + 0.18, SEAT_Z + 0.16))
         for s in (-1, 1):
-            path = [(x + s * 0.10, -0.79, 1.08), (x + s * 0.09, -0.62, 1.04), (x + s * 0.085, -0.52, 1.0),
-                    (x + s * 0.07, -0.38, 0.86), (x + s * 0.03, lock.y - 0.03, lock.z + 0.04)]
+            path = [(x + s * 0.10, CB, 1.08), (x + s * 0.09, CB + 0.14, 1.04), (x + s * 0.085, CB + 0.24, 1.0),
+                    (x + s * 0.07, CB + 0.36, 0.86), (x + s * 0.03, lock.y - 0.03, lock.z + 0.04)]
             strap.add(G.sweep(G.spline(path, 6), flat, up_hint=(1, 0, 0)))
             lap = [(x + s * 0.21, SEAT_Y - 0.05, SEAT_Z + 0.10), (x + s * 0.17, SEAT_Y + 0.08, SEAT_Z + 0.16),
                    (x + s * 0.05, lock.y - 0.01, lock.z)]
             strap.add(G.sweep(G.spline(lap, 6), flat, up_hint=(0, 0, 1)))
-            hw.add(G.box((0.06, 0.012, 0.03), r=0.004), loc=(x + s * 0.075, -0.42, 0.90), rot=(0.7, 0, 0))
+            hw.add(G.box((0.06, 0.012, 0.03), r=0.004), loc=(x + s * 0.075, CB + 0.34, 0.90), rot=(0.7, 0, 0))
         sub = [(x, SEAT_Y + 0.26, SEAT_Z + 0.06), (x, SEAT_Y + 0.22, SEAT_Z + 0.10), (x, lock.y, lock.z - 0.03)]
         strap.add(G.sweep(G.spline(sub, 6), flat, up_hint=(1, 0, 0)))
         hw.add(G.lathe([(0.0, -0.008), (0.042, -0.008), (0.045, 0.0), (0.04, 0.010), (0.0, 0.012)], segs=32, uv=False),
@@ -72,18 +73,18 @@ def harnesses(cp, col, M):
 def cage(cp, col, M):
     c = G.Part("INT_CAGE", "Gloss_Black", parent=cp, smooth=50)
     r = 0.02
-    hoop = G.fillet_open([(-0.84, -0.79, CAB_FLOOR_Z), (-0.84, -0.79, 1.42), (-0.70, -0.79, 1.51),
-                          (0.70, -0.79, 1.51), (0.84, -0.79, 1.42), (0.84, -0.79, CAB_FLOOR_Z)], 0.12, k=8)
+    hoop = G.fillet_open([(-0.84, CB, CAB_FLOOR_Z), (-0.84, CB, 1.42), (-0.70, CB, 1.51),
+                          (0.70, CB, 1.51), (0.84, CB, 1.42), (0.84, CB, CAB_FLOOR_Z)], 0.12, k=8)
     c.add(G.sweep(hoop, G.circle2d(r, 12)))
-    c.add(G.tube([(-0.84, -0.79, 1.08), (0.84, -0.79, 1.08)], r, segs=12, smooth=False))       # harness bar
-    c.add(G.tube([(-0.80, -0.79, 1.45), (0.84, -0.79, 0.60)], r * 0.9, segs=12, smooth=False))  # diagonal
+    c.add(G.tube([(-0.84, CB, 1.08), (0.84, CB, 1.08)], r, segs=12, smooth=False))       # harness bar
+    c.add(G.tube([(-0.80, CB, 1.45), (0.84, CB, 0.60)], r * 0.9, segs=12, smooth=False))  # diagonal
     for s in (-1, 1):
-        a = G.fillet_open([(s * 0.76, -0.79, 1.50), (s * 0.76, 0.33, 1.50), (s * 0.84, 0.84, 1.07),
+        a = G.fillet_open([(s * 0.76, CB, 1.50), (s * 0.76, 0.33, 1.50), (s * 0.84, 0.84, 1.07),
                            (s * 0.86, 0.86, CAB_FLOOR_Z)], 0.10, k=8)
         c.add(G.sweep(a, G.circle2d(r, 12)))
-        c.add(G.tube([(s * 0.86, 0.80, 0.62), (s * 0.84, -0.77, 0.62)], r * 0.9, segs=12, smooth=False))  # door bar
+        c.add(G.tube([(s * 0.86, 0.80, 0.62), (s * 0.84, CB + 0.02, 0.62)], r * 0.9, segs=12, smooth=False))  # door bar
     plates = G.Part("INT_CAGE_PLATES", "Brushed_Alu", parent=cp, smooth=30)
-    for x, y in ((-0.84, -0.79), (0.84, -0.79), (-0.86, 0.86), (0.86, 0.86)):
+    for x, y in ((-0.84, CB), (0.84, CB), (-0.86, 0.86), (0.86, 0.86)):
         plates.add(G.box((0.10, 0.10, 0.006), r=0.01), loc=(x, y, CAB_FLOOR_Z + 0.008))
     c.build(col, M)
     plates.build(col, M)
@@ -100,7 +101,7 @@ def dash(cp, col, M):
     for s in (-1, 1):                                                                   # door cards
         d.add(G.box((0.035, 1.40, 0.58), r=0.015), loc=(s * 0.905, 0.03, 0.70))
         d.add(G.box((0.07, 0.40, 0.05), r=0.02), loc=(s * 0.875, -0.05, 0.80))
-    d.add(G.box((1.72, 1.12, 0.012), r=0.004), loc=(0, -0.24, 1.548))                    # headliner
+    d.add(G.box((1.72, 0.74, 0.012), r=0.004), loc=(0, -0.03, 1.548))                    # headliner
     for s in (-1, 1):
         d.add(G.box((0.36, 0.17, 0.018), r=0.008), loc=(s * 0.42, 0.28, 1.53), rot=(0.25, 0, 0))   # visors
     d.add(G.tube([(DRIVER_X, 0.47, 0.97), (DRIVER_X, 0.74, 0.86)], 0.03, segs=16, smooth=False))  # column

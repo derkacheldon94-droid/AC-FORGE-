@@ -6,7 +6,7 @@ import bpy  # noqa: F401
 from mathutils import Vector
 
 from . import geo as G
-from .dims import BELT_Z, BODY_X, FRONT_Y, REAR_Y, ROOF_Z
+from .dims import BELT_Z, BODY_X, CAB_BACK_Y, DOOR_REAR_Y, FRONT_Y, REAR_Y, ROOF_Z
 
 Y0 = FRONT_Y
 
@@ -113,8 +113,8 @@ def bumper_front(col, M):
     rods = G.Part("DETAIL_SPLITTER_RODS", "Anodized_Black", smooth=40)
     for s in (-0.55, 0.55):
         rods.add(G.tube([(s, Y0 + 0.2, 0.30), (s, Y0 + 0.3, 0.223)], 0.006, segs=8))
-        rods.add(G.sphere(0.011, 10), loc=(s, Y0 + 0.2, 0.30))
-        rods.add(G.sphere(0.011, 10), loc=(s, Y0 + 0.3, 0.226))
+        rods.add(G.sphere(0.011, 8), loc=(s, Y0 + 0.2, 0.30))
+        rods.add(G.sphere(0.011, 8), loc=(s, Y0 + 0.3, 0.226))
     for p in (body, trim, mesh, carbon, rods):
         p.build(col, M)
 
@@ -163,7 +163,7 @@ def markers_mirrors_trim(col, M):
     for s in (-1, 1):
         lens_a.add(G.box((0.012, 0.11, 0.042), r=0.005), loc=(s * (BODY_X + 0.001), 2.06, 0.86))
         mk_f.add(G.box((0.004, 0.09, 0.03)), loc=(s * (BODY_X - 0.004), 2.06, 0.86))
-        lens_r.add(G.box((0.012, 0.11, 0.042), r=0.005), loc=(s * (BODY_X + 0.001), -2.38, 0.86))
+        lens_r.add(G.box((0.012, 0.11, 0.042), r=0.005), loc=(s * (BODY_X + 0.001), REAR_Y + 0.12, 0.86))
         mk_r.add(G.box((0.004, 0.09, 0.03)), loc=(s * (BODY_X - 0.004), -2.38, 0.86))
     for p in (lens_a, lens_r, mk_f, mk_r):
         p.build(col, M)
@@ -182,8 +182,8 @@ def markers_mirrors_trim(col, M):
     trim = G.Part("DETAIL_BODY_HARDWARE", "Gloss_Black", smooth=40)
     chrome = G.Part("DETAIL_BODY_CHROME", "Chrome", smooth=40)
     for s in (-1, 1):
-        trim.add(G.box((0.012, 0.15, 0.032), r=0.006), loc=(s * (BODY_X - 0.008), -0.52, 0.905))
-        chrome.add(G.cyl(0.009, 0.01, segs=16), loc=(s * (BODY_X - 0.002), -0.40, 0.905), rot=(0, math.pi / 2, 0))
+        trim.add(G.box((0.012, 0.15, 0.032), r=0.006), loc=(s * (BODY_X - 0.008), -0.10, 0.905))
+        chrome.add(G.cyl(0.009, 0.01, segs=16), loc=(s * (BODY_X - 0.002), 0.04, 0.905), rot=(0, math.pi / 2, 0))
     paint = G.Part("BODY_FUEL_DOOR", "Paint_Black", smooth=40)
     paint.add(G.cyl(0.069, 0.006, segs=48), loc=(-(BODY_X - 0.007), -0.98, 0.80), rot=(0, math.pi / 2, 0))
     paint.build(col, M)
@@ -211,18 +211,18 @@ def markers_mirrors_trim(col, M):
     for s in (-1, 1):
         n = Vector((s, 0, 0))
         right = Vector((0, 0, 1)).cross(n)
-        badges.add(G.text("TWIN TURBO", size=0.032, depth=0.003), matrix=G.basis((s * (BODY_X + 0.001), -2.10, 0.80),
+        badges.add(G.text("TWIN TURBO", size=0.032, depth=0.003), matrix=G.basis((s * (BODY_X + 0.001), -2.12, 0.80),
                                                                                   right, (0, 0, 1), n))
-        red_badges.add(G.text("Z71", size=0.10, depth=0.004), matrix=G.basis((s * (BODY_X + 0.001), -2.10, 0.90),
+        red_badges.add(G.text("Z71", size=0.10, depth=0.004), matrix=G.basis((s * (BODY_X + 0.001), -2.12, 0.90),
                                                                              right, (0, 0, 1), n))
     # pinstripes / graphics from the reference: roof stripes + red/white wedges on the rear bed sides
     stripe_r = G.Part("DECAL_STRIPES_RED", "Caliper_Red", smooth=0)
     stripe_w = G.Part("DECAL_STRIPES_WHITE", "Decal_White", smooth=0)
     roof_z = ROOF_Z + 0.019
     for x in (-0.09, 0.09):
-        stripe_r.add(G.box((0.022, 1.05, 0.002)), loc=(x, -0.24, roof_z))
+        stripe_r.add(G.box((0.022, 0.70, 0.002)), loc=(x, -0.01, roof_z))
     for x in (-0.06, 0.06):
-        stripe_w.add(G.box((0.012, 1.05, 0.002)), loc=(x, -0.24, roof_z))
+        stripe_w.add(G.box((0.012, 0.70, 0.002)), loc=(x, -0.01, roof_z))
     for s in (-1, 1):
         for part, off, wd in ((stripe_r, 0.0, 0.05), (stripe_w, 0.07, 0.02)):
             wedge = [(REAR_Y + 0.05, BELT_Z - 0.03 - off), (REAR_Y + 0.21, BELT_Z - 0.03 - off),
@@ -252,10 +252,10 @@ def rear(col, M):
                          loc=(xc, yb - 0.043, zc), rot=(0, 0, -math.pi / 2))
         clear.add(G.box((0.10, 0.008, 0.09), r=0.004), loc=(xc, yb - 0.05, 0.62))
     # third brake light on the cab
-    housing.add(G.box((0.32, 0.045, 0.045), r=0.012), loc=(0, -0.85, ROOF_Z - 0.04))
-    red.add(G.box((0.30, 0.006, 0.03), r=0.004), loc=(0, -0.875, ROOF_Z - 0.04))
+    housing.add(G.box((0.32, 0.045, 0.045), r=0.012), loc=(0, CAB_BACK_Y + 0.00, ROOF_Z - 0.045))
+    red.add(G.box((0.30, 0.006, 0.03), r=0.004), loc=(0, CAB_BACK_Y - 0.021, ROOF_Z - 0.045))
     b3 = G.Part("LIGHT_BRAKE3", "Light_Tail", smooth=0)
-    b3.add(G.box((0.28, 0.004, 0.02)), loc=(0, -0.868, ROOF_Z - 0.04))
+    b3.add(G.box((0.28, 0.004, 0.02)), loc=(0, CAB_BACK_Y - 0.0185, ROOF_Z - 0.045))
     for p in (housing, red, clear, refl, b3, *tails.values()):
         p.build(col, M)
 

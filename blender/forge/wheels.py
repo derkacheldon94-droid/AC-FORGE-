@@ -40,7 +40,7 @@ def _tyre(hw):
         if k in shoulder and (i // 3) % 2 == 0:
             return r - 0.004
         return r
-    return G.lathe(pts, segs=144, closed=True, uv=True, modulate=mod)
+    return G.lathe(pts, segs=112, closed=True, uv=True, modulate=mod)
 
 
 def _spokes(hw):
@@ -51,8 +51,8 @@ def _spokes(hw):
         base = G.TAU * i / 7
         for side in (-1, 1):
             pts = []
-            for j in range(12):
-                t = j / 11
+            for j in range(9):
+                t = j / 8
                 r = r_hub + (r_out - r_hub) * t
                 th = base + side * (0.045 + 0.085 * t ** 1.2)
                 a = a_hub + (a_out - a_hub) * (t ** 0.8) - 0.006 * math.sin(math.pi * t)
@@ -64,7 +64,7 @@ def _spokes(hw):
 
 def wheel(empty, width, M, col, tag):
     hw = width / 2
-    tyre = G.Part(f"{empty.name}_TYRE", "Tyre", parent=empty, smooth=50)
+    tyre = G.Part(f"{empty.name}_TYRE", "Tyre_Front" if tag[1] == "F" else "Tyre_Rear", parent=empty, smooth=50)
     tyre.add(_tyre(hw))
     tyre.build(col, M)
 
@@ -72,13 +72,13 @@ def wheel(empty, width, M, col, tag):
     lip_prof = [(RIM_R - 0.036, hw - 0.062), (RIM_R - 0.026, hw - 0.062), (RIM_R - 0.022, hw - 0.018),
                 (RIM_R + 0.004, hw - 0.012), (RIM_R + 0.013, hw - 0.006), (RIM_R + 0.012, hw - 0.0005),
                 (RIM_R - 0.004, hw - 0.001), (RIM_R - 0.030, hw - 0.010), (RIM_R - 0.038, hw - 0.030)]
-    lip.add(G.lathe(lip_prof, segs=96, uv=False))
+    lip.add(G.lathe(lip_prof, segs=72, uv=False))
     lip.build(col, M)
 
     barrel = G.Part(f"{empty.name}_RIM_BARREL", "Cast_Alu", parent=empty, smooth=40)
     barrel.add(G.lathe([(RIM_R - 0.014, -hw + 0.008), (RIM_R + 0.010, -hw + 0.004), (RIM_R + 0.010, -hw + 0.014),
                         (RIM_R - 0.002, -hw + 0.02), (RIM_R - 0.002, hw - 0.06), (RIM_R - 0.014, hw - 0.06)],
-                       segs=72, uv=False))
+                       segs=56, uv=False))
     barrel.build(col, M)
 
     face = G.Part(f"{empty.name}_RIM", "Rim_Red", parent=empty, smooth=40)
@@ -91,15 +91,15 @@ def wheel(empty, width, M, col, tag):
     face.build(col, M)
 
     hw_p = G.Part(f"BOLTS_{empty.name}_HARDWARE", "Chrome", parent=empty, smooth=30)
-    for i in range(40):                                   # lip rivets
-        th = G.TAU * i / 40
+    for i in range(32):                                   # lip rivets
+        th = G.TAU * i / 32
         r = RIM_R - 0.017
-        hw_p.add(G.sphere(0.0042, 8), loc=(hw - 0.0085, r * math.cos(th), r * math.sin(th)))
+        hw_p.add(G.bolt(0.0055, 0.0045, top=0.55), loc=(hw - 0.0085, r * math.cos(th), r * math.sin(th)))
     for i in range(6):                                    # lug nuts (hex) + washers
         th = G.TAU * i / 6 + 0.3
         c = (hw - 0.018, 0.058 * math.cos(th), 0.058 * math.sin(th))
-        hw_p.add(G.cyl(0.0115, 0.024, segs=6), loc=c, rot=(0, math.pi / 2, 0))
-        hw_p.add(G.cyl(0.015, 0.004, segs=16), loc=(hw - 0.029, c[1], c[2]), rot=(0, math.pi / 2, 0))
+        hw_p.add(G.bolt(0.0115, 0.024), loc=c, rot=(0, math.pi / 2, 0))
+        hw_p.add(G.washer(0.015, 0.004), loc=(hw - 0.029, c[1], c[2]), rot=(0, math.pi / 2, 0))
     hw_p.add(G.cyl(0.004, 0.035, segs=8), loc=(hw - 0.03, 0, RIM_R - 0.03), rot=(0, math.pi / 2 - 0.5, 0))
     hw_p.build(col, M)
     cap = G.Part(f"DETAIL_{empty.name}_CAP", "Gloss_Black", parent=empty, smooth=40)
@@ -122,13 +122,13 @@ def brakes(disc_empty, susp_empty, width, front, M, col, tag):
     rotor = G.Part(f"{disc_empty.name}_ROTOR", "Brake_Disc", parent=disc_empty, smooth=30)
     for off in (-0.011, 0.011):
         plate = G.lathe([(r_in, off - 0.005), (r_out, off - 0.005), (r_out, off + 0.005), (r_in, off + 0.005)],
-                        segs=96, uv=False)
+                        segs=72, uv=False)
         G.planar_uv(plate, (0, 0, 0), (0, 1, 0), (0, 0, 1), 2 * r_out, 2 * r_out)
         rotor.add(plate, loc=(a_d, 0, 0))
     rotor.build(col, M)
     vanes = G.Part(f"{disc_empty.name}_VANES", "Engine_Dark", parent=disc_empty, smooth=0)
-    for i in range(40):
-        th = G.TAU * i / 40
+    for i in range(28):
+        th = G.TAU * i / 28
         rm = (r_in + r_out) / 2
         vanes.add(G.box((0.012, r_out - r_in - 0.004, 0.005)), loc=(a_d, rm * math.cos(th), rm * math.sin(th)),
                   rot=(th - math.pi / 2 + 0.25, 0, 0))
