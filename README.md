@@ -38,6 +38,23 @@ Not included: sound banks (step 3), a driver model, and animated doors or wipers
 - **Total budget: 200,000.** `VERTEX_BUDGET` in `blender/forge/export.py` caps LOD A. Fasteners, small engine and turbo parts, interior and text are trimmed to fit. Body panels, the hood, flares and wide-body parts, tyres, rotors, glass and lights are never touched. Raise the constant to keep more detail.
 - **Per-mesh limit: 65,535.** This is the `.kn5` format's own limit (16-bit indices), so it can't be raised. The largest mesh here has 17,684 vertices, and the exporter splits any mesh that gets near the limit.
 
+## Second car: your sculpted model (`chevy_z71`)
+
+`content/cars/chevy_z71` (zip: `dist/chevy_z71.zip`) is the sculpted widebody Silverado you supplied as a `.kn5`, turned into a complete car for Content Manager. Install it the same way as above, including **Replace sound**.
+
+- **Model:** your geometry is kept as delivered (same mesh, normals, UVs and wheel pivots). The source is `blender/user_model/source/chevy_z71.kn5`.
+- **Vertex limit:** the full-detail model was 331,479 in-game vertices. To fit the 200,000 limit, the body was collapse-decimated to 198,679 and the wheels were left untouched. Raise `VERTEX_BUDGET` in `blender/forge/export.py` to keep more detail. Lower-detail versions B, C and D were added for distance.
+- **Shading:** `Silver_Paint`, `Tire_Rubber` and `Wheel_Alloy` now have paint, rubber and metal values instead of flat matte.
+- **Skins:** *Silver Clay* (your colour) and *Blackout*. A skin only needs its own `Silver_Paint.png`.
+- **Physics:** fitted to the model: 3.09 m wheelbase, 1.83 m track, 0.465 m tyres on 0.34 m rims. The final drive is raised to 4.89 so road speeds per gear match the bigger tyres. Collision boxes, driver camera and shadows match the body.
+- **Missing parts:** the body is one joined mesh, so it has no separate glass, lights, interior or steering wheel. `lights.ini` is therefore empty.
+
+Rebuild it with:
+
+```bash
+python blender/user_model/build_chevy_z71.py --render
+```
+
 ## Real-world specs
 
 The layout follows a 1994 Chevrolet C/K1500 (GMT400) **regular cab, short (6.5 ft) bed**. The wide-body kit sits on top of it.
