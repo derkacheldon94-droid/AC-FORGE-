@@ -279,8 +279,52 @@ def bed_and_floors(col, M):
     rails.build(col, M)
 
 
+def hood(col, M):
+    """GMT400 hood (wireframe drawings): crowned, rolls off at the front, two faint character lines,
+    with a rounded cut-out the carbon airbox and throttle bodies stand up through."""
+    y0, y1 = FIREWALL_Y + 0.038, FRONT_Y - 0.062          # inside the engine-bay opening, ~4 mm shut gaps
+    hx, nx, ny = 0.895, 36, 48
+    secs = []
+    for j in range(ny + 1):
+        y = y0 + (y1 - y0) * j / ny
+        f = (y - y0) / (y1 - y0)
+        drop = 0.018 * f ** 2
+        top, bot = [], []
+        for i in range(nx + 1):
+            x = -hx + 2 * hx * i / nx
+            z = BELT_Z + 0.004 + 0.030 * (1 - (x / hx) ** 2) + 0.004 * math.exp(-((abs(x) - 0.45) / 0.05) ** 2) - drop
+            top.append((x, y, z))
+            bot.append((x, y, z - 0.022))
+        secs.append(top + bot[::-1])
+    part = G.Part("BODY_HOOD", "Paint_Black", smooth=40)
+    part.add(G.loft(secs))
+    o = part.build(col, M)
+    cut = G.box((0.80, 0.50, 0.30), r=0.07)
+    bmesh.ops.transform(cut, matrix=G.xf((0, 1.75, BELT_Z + 0.06)), verts=cut.verts)
+    G.boolean(o, [cut])
+    G.bevel_mod(o, 0.003, segments=2, angle=50)
+    G.smooth_by_angle(o, 40)
+    G.weighted_normals(o)
+
+    trim = G.Part("BODY_HOOD_TRIM", "Brushed_Alu", smooth=50)
+    path = [Vector((x, y, BELT_Z + 0.004 + 0.030 * (1 - (x / hx) ** 2) - 0.018 * ((y - y0) / (y1 - y0)) ** 2 + 0.002))
+            for x, y in G.fillet_poly([(-0.40, 1.50), (0.40, 1.50), (0.40, 2.00), (-0.40, 2.00)], 0.07, k=8, edge_div=6)]
+    trim.add(G.sweep(path, G.rrect2d(0.010, 0.016, 0.004, k=2), closed=True, up_hint=(0, 0, 1)))
+    trim.build(col, M)
+    pins = G.Part("DETAIL_HOOD_PINS", "Chrome", smooth=50)
+    for s in (-1, 1):
+        x, y = s * 0.62, 2.04
+        z = BELT_Z + 0.004 + 0.030 * (1 - (x / hx) ** 2) - 0.018 * ((y - y0) / (y1 - y0)) ** 2
+        pins.add(G.cyl(0.022, 0.006, segs=24), loc=(x, y, z + 0.002))
+        pins.add(G.lathe([(0.010 + 0.003 * math.cos(q), 0.003 * math.sin(q)) for q in [G.TAU * k / 6 for k in range(6)]],
+                         segs=16, uv=False), loc=(x + 0.03, y, z + 0.006), rot=(0, 0, 0))
+    pins.build(col, M)
+    return o
+
+
 def build(col, M):
     lower_shell(col, M)
+    hood(col, M)
     greenhouse(col, M)
     flares(col, M)
     liners(col, M)

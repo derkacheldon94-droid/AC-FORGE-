@@ -85,13 +85,13 @@ def turbo(s, P):
                           Vector((s * 0.14, TY + 0.10, BED_FLOOR_Z - 0.08)), Vector((s * 0.30, EYM, EXIT_Z))],
                          0.05, segs=16))
     for y in EY:
-        P["polish"].add(G.tube([(s * 0.30, EYM, EXIT_Z), (s * 0.45, y, EXIT_Z), (s * (BODY_X - 0.05), y, EXIT_Z)],
+        P["polish"].add(G.tube([(s * 0.30, EYM, EXIT_Z), (s * 0.45, y, EXIT_Z), (s * (BODY_X - 0.01), y, EXIT_Z)],
                                EXIT_R - 0.004, segs=20))
         tip = [(EXIT_R - 0.004, -0.06), (EXIT_R, -0.06), (EXIT_R + 0.004, 0.01), (EXIT_R + 0.002, 0.03),
                (EXIT_R - 0.004, 0.03), (EXIT_R - 0.006, -0.02)]
-        P["tips"].add(G.lathe(tip, segs=40, uv=False), loc=(s * BODY_X, y, EXIT_Z), scale=(s, 1, 1))
+        P["tips"].add(G.lathe(tip, segs=40, uv=False), loc=(s * (BODY_X + 0.035), y, EXIT_Z), scale=(s, 1, 1))
         P["hot_tip"].add(G.lathe([(EXIT_R - 0.007, -0.10), (EXIT_R - 0.005, -0.10), (EXIT_R - 0.005, 0.01),
-                                  (EXIT_R - 0.007, 0.01)], segs=32, uv=False), loc=(s * BODY_X, y, EXIT_Z), scale=(s, 1, 1))
+                                  (EXIT_R - 0.007, 0.01)], segs=32, uv=False), loc=(s * (BODY_X + 0.035), y, EXIT_Z), scale=(s, 1, 1))
 
     # charge pipe: compressor outlet -> over the turbine -> down into the centre plenum (silver, like the build)
     P["sil"].add(G.cyl(0.064, 0.07, segs=24), matrix=G.xf(c_out + c_dir * 0.03) @ G.look_rot(c_dir))
@@ -170,6 +170,17 @@ def fuel_cell_battery_coilovers(col, M):
         for p in (b, t):
             brass.add(G.cyl(0.016, 0.06, segs=12), loc=p, rot=(math.pi / 2, 0, 0))
         alu.add(G.box((0.03, 0.12, 0.12), r=0.01), loc=(s * 0.87, -1.66, 0.97))              # outer mount
+    # rear tube truss across the open back of the bed (wireframe rear views)
+    truss = G.Part("BED_REAR_TRUSS", "Gloss_Black", smooth=50)
+    yt, zt = REAR_Y + 0.11, 0.98
+    truss.add(G.tube([(-0.90, yt, zt), (0.90, yt, zt)], 0.024, segs=14, smooth=False))
+    for s in (-1, 1):
+        truss.add(G.tube([(s * 0.86, yt, zt), (s * 0.30, REAR_Y + 0.70, BED_FLOOR_Z + 0.03)], 0.02, segs=12, smooth=False))
+        truss.add(G.tube([(s * 0.86, yt, zt), (s * 0.86, REAR_Y + 0.40, BED_FLOOR_Z + 0.03)], 0.02, segs=12, smooth=False))
+        truss.add(G.box((0.12, 0.10, 0.008), r=0.01), loc=(s * 0.30, REAR_Y + 0.70, BED_FLOOR_Z + 0.03))
+        truss.add(G.box((0.12, 0.10, 0.008), r=0.01), loc=(s * 0.86, REAR_Y + 0.40, BED_FLOOR_Z + 0.03))
+        truss.add(G.box((0.03, 0.10, 0.10), r=0.01), loc=(s * 0.905, yt, zt))
+    truss.build(col, M)
     # tie-down hooks
     for x in (-0.89, 0.89):
         for y in (-1.0, -2.40):

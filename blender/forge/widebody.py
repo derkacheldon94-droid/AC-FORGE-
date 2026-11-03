@@ -19,7 +19,7 @@ def skirts(col, M):
     carbon = G.Part("WIDEBODY_SKIRTS", "Carbon", smooth=35, uv_scale=8)
     lip = G.Part("WIDEBODY_SKIRT_LIPS", "Carbon", smooth=30, uv_scale=8)
     bolts = G.Part("BOLTS_WIDEBODY_SKIRTS", "Chrome", smooth=40)
-    y0 = RA + 0.385 - 0.04
+    y0 = max(EXIT_Y) + 0.10           # skirts end just ahead of the bed-side exhaust exits
     y1 = FA - 0.385 + 0.04
     for s in (-1, 1):
         secs = []
@@ -49,22 +49,36 @@ def skirts(col, M):
 
 
 def extensions(col, M):
-    """Fender extensions that carry the flare line forward/back into the bumpers."""
+    """Carbon flare extensions that carry the wide-body line from the wheels into the bumpers
+    (the 'widebody flare extension' panels in the rear orthographic drawing)."""
     ext = G.Part("WIDEBODY_EXTENSIONS", "Carbon", smooth=40, uv_scale=8)
     bolts = G.Part("BOLTS_WIDEBODY_EXT", "Chrome", smooth=40)
-    front = G.fillet_poly([(0.96, FA + 0.33), (1.085, FA + 0.33), (1.09, FA + 0.46), (1.06, FRONT_Y + 0.00),
-                           (1.02, FRONT_Y + 0.10), (0.93, FRONT_Y + 0.12)], [0.0, 0.03, 0.04, 0.06, 0.04, 0.0], k=5)
-    rear = G.fillet_poly([(0.96, RA - 0.33), (1.095, RA - 0.33), (1.10, RA - 0.46), (1.07, REAR_Y + 0.14),
-                          (1.02, REAR_Y - 0.06), (0.93, REAR_Y - 0.06)], [0.0, 0.03, 0.04, 0.06, 0.04, 0.0], k=5)
+    front = G.fillet_poly([(0.975, FA + 0.405), (1.075, FA + 0.405), (1.065, FA + 0.60), (1.03, FRONT_Y - 0.02),
+                           (0.975, FRONT_Y - 0.02)], [0.0, 0.02, 0.05, 0.05, 0.0], k=6)
+    rear = G.fillet_poly([(0.975, RA - 0.41), (1.10, RA - 0.41), (1.09, RA - 0.62), (1.035, REAR_Y + 0.05),
+                          (0.975, REAR_Y + 0.05)], [0.0, 0.02, 0.05, 0.05, 0.0], k=6)
     for s in (-1, 1):
-        ext.add(G.prism(front, 0.29, axis="Z"), loc=(0, 0, 0.455), scale=(s, 1, 1))
-        ext.add(G.prism(rear, 0.34, axis="Z"), loc=(0, 0, 0.47), scale=(s, 1, 1))
-        for y, z in ((FA + 0.52, 0.36), (FA + 0.52, 0.55), (FRONT_Y - 0.10, 0.36), (FRONT_Y - 0.10, 0.55)):
-            bolts.add(G.bolt(0.0065, 0.007), loc=(s * 1.085, y, z), rot=(0, math.pi / 2, 0))
-        for y, z in ((RA - 0.55, 0.36), (RA - 0.55, 0.58), (REAR_Y + 0.30, 0.36), (REAR_Y + 0.30, 0.58)):
-            bolts.add(G.bolt(0.0065, 0.007), loc=(s * 1.09, y, z), rot=(0, math.pi / 2, 0))
+        f = G.prism(front, 0.26, axis="Z")
+        bmesh_bevel(f, 0.012)
+        ext.add(f, loc=(0, 0, 0.43), scale=(s, 1, 1))
+        r = G.prism(rear, 0.36, axis="Z")
+        bmesh_bevel(r, 0.012)
+        ext.add(r, loc=(0, 0, 0.46), scale=(s, 1, 1))
+        for i in range(5):
+            y = FA + 0.46 + (FRONT_Y - 0.10 - FA - 0.46) * i / 4
+            for z in (0.33, 0.53):
+                bolts.add(G.bolt(0.0055, 0.006), loc=(s * (1.072 - 0.035 * i / 4 + 0.003), y, z), rot=(0, s * math.pi / 2, 0))
+        for i in range(5):
+            y = RA - 0.47 + (REAR_Y + 0.16 - RA + 0.47) * i / 4
+            for z in (0.31, 0.61):
+                bolts.add(G.bolt(0.0055, 0.006), loc=(s * (1.096 - 0.055 * i / 4 + 0.003), y, z), rot=(0, s * math.pi / 2, 0))
     ext.build(col, M)
     bolts.build(col, M)
+
+
+def bmesh_bevel(bm, w):
+    import bmesh
+    bmesh.ops.bevel(bm, geom=list(bm.edges), offset=w, segments=2, profile=0.5, affect="EDGES", clamp_overlap=True)
 
 
 def exit_trims(col, M):
@@ -87,4 +101,5 @@ def exit_trims(col, M):
 
 def build(col, M):
     skirts(col, M)
+    extensions(col, M)
     exit_trims(col, M)
